@@ -1274,6 +1274,7 @@
       // Фиксируем факт тренировки на сегодня и двигаем AI цикл
       const todayStr = new Date().toISOString().split('T')[0];
       localStorage.setItem('spartan_last_workout_date', todayStr);
+      localStorage.removeItem('spartan_custom_ai_workout');
       const currCycle = parseInt(localStorage.getItem('spartan_ai_cycle_idx') || '0', 10);
       localStorage.setItem('spartan_ai_cycle_idx', (currCycle + 1).toString());
 
@@ -1566,6 +1567,74 @@
     // --- РЕЖИМ 'ТРЕНИРОВАТЬСЯ С AI' & ДИНАМИЧЕСКИЙ ГЛАВНЫЙ ЭКРАН ---
     let isAIMode = localStorage.getItem('spartan_ai_mode') !== 'false'; // default true
 
+    // Получение кастомного задания, переданного AI-тренером из чата
+    function getCustomWorkout() {
+      try {
+        const raw = localStorage.getItem('spartan_custom_ai_workout');
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error('Ошибка чтения кастомной тренировки:', e);
+      }
+      return null;
+    }
+
+    function clearCustomWorkout() {
+      localStorage.removeItem('spartan_custom_ai_workout');
+      triggerHaptic('light');
+      renderHomeActions();
+    }
+
+    // Проверка входящего задания из Telegram бота через URL-параметры (?workout=... или #workout=...)
+    function checkIncomingCustomWorkout() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let raw = urlParams.get('workout') || urlParams.get('custom');
+
+        if (!raw && window.location.hash) {
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          raw = hashParams.get('workout') || hashParams.get('custom');
+        }
+
+        if (!raw && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.start_param) {
+          raw = window.Telegram.WebApp.initDataUnsafe.start_param;
+        }
+
+        if (raw) {
+          let parsed = null;
+          try {
+            // Декодирование Base64 с поддержкой UTF-8
+            const binaryStr = atob(raw);
+            const bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+              bytes[i] = binaryStr.charCodeAt(i);
+            }
+            const decodedStr = new TextDecoder('utf-8').decode(bytes);
+            parsed = JSON.parse(decodedStr);
+          } catch (e1) {
+            try {
+              parsed = JSON.parse(decodeURIComponent(raw));
+            } catch (e2) {
+              console.warn('Не удалось распарсить тренировку из URL', e1, e2);
+            }
+          }
+
+          if (parsed && Array.isArray(parsed.exercises) && parsed.exercises.length > 0) {
+            localStorage.setItem('spartan_custom_ai_workout', JSON.stringify(parsed));
+            isAIMode = true;
+            localStorage.setItem('spartan_ai_mode', 'true');
+            // Очищаем адресную строку браузера для чистоты
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      } catch (err) {
+        console.error('checkIncomingCustomWorkout error:', err);
+      }
+    }
+
     // Базовые циклы тренировок для AI режима
     const AI_WORKOUT_CYCLES = [
       {
@@ -1610,9 +1679,23 @@
     ];
 
     function openAIProgramModal(forNextDay = false) {
-      const cycleIdx = parseInt(localStorage.getItem('spartan_ai_cycle_idx') || '0', 10);
-      const targetIdx = forNextDay ? (cycleIdx + 1) : cycleIdx;
-      const workout = AI_WORKOUT_CYCLES[targetIdx % AI_WORKOUT_CYCLES.length];
+      let workout;
+      const custom = (!forNextDay) ? getCustomWorkout() : null;
+
+      if (custom) {
+        workout = {
+          title: custom.title || 'Персональная программа от ИИ',
+          focus: custom.focus || 'Индивидуальный комплекс от тренера Спартана',
+          aiRationale: custom.aiRationale || 'Комплекс составлен ИИ-тренером специально под твой запрос в чате. Покажи дисциплину и чистую технику!',
+          durationEst: custom.durationEst || `~${Math.max(10, custom.exercises.length * 4)} мин`,
+          restSec: custom.restSec || 60,
+          exercises: custom.exercises
+        };
+      } else {
+        const cycleIdx = parseInt(localStorage.getItem('spartan_ai_cycle_idx') || '0', 10);
+        const targetIdx = forNextDay ? (cycleIdx + 1) : cycleIdx;
+        workout = AI_WORKOUT_CYCLES[targetIdx % AI_WORKOUT_CYCLES.length];
+      }
 
       document.getElementById('modal-ai-title').textContent = workout.title;
       document.getElementById('modal-ai-focus').textContent = workout.focus;
@@ -1705,6 +1788,43 @@
       }
 
       // РЕЖИМ С AI:
+      // Сначала проверяем: если есть кастомное задание от тренера из чата — показываем его в первую очередь!
+      const custom = getCustomWorkout();
+      if (custom) {
+        box.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-left mb-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-teal-400 flex items-center space-x-1.5">
+                <span>⚡</span>
+                <span>Задание от ИИ-тренера</span>
+              </span>
+              <button onclick="clearCustomWorkout()" class="text-[11px] text-zinc-400 hover:text-white underline cursor-pointer">
+                Сбросить на цикл
+              </button>
+            </div>
+            <p class="text-sm font-black text-white mt-1">${custom.title || 'Персональный комплекс'}</p>
+            <p class="text-xs text-zinc-300 mt-0.5">${custom.focus || 'Сформировано по твоему запросу в чате'}</p>
+          </div>
+          <button onclick="startAIWorkout()" class="w-full py-4 px-6 rounded-2xl bg-teal-500 hover:bg-teal-400 active:scale-[0.98] transition-all font-bold text-zinc-950 text-base shadow-lg shadow-teal-500/25 flex items-center justify-center space-x-2 cursor-pointer mb-2.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>🔥 Начать: ${custom.title || 'Новую тренировку'}</span>
+          </button>
+          <button onclick="openAIProgramModal(false)" class="w-full p-3.5 rounded-2xl bg-zinc-900/90 hover:bg-zinc-800 active:scale-[0.98] border border-zinc-800 text-left transition-all flex items-center justify-between group cursor-pointer shadow-sm">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-sm font-bold">
+                📋
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white group-hover:text-teal-400 transition-colors">Ознакомиться с программой</p>
+                <p class="text-[10px] text-zinc-400">${custom.exercises ? custom.exercises.length : 3} упр. • ${custom.durationEst || '~12 мин'}</p>
+              </div>
+            </div>
+            <svg class="w-4 h-4 text-zinc-500 group-hover:text-teal-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        `;
+        return;
+      }
+
       // В режиме с AI выбор программ убран. Пользователь сразу начинает план дня либо знакомится с ним!
       const todayStr = new Date().toISOString().split('T')[0];
       const lastWorkoutDate = localStorage.getItem('spartan_last_workout_date');
@@ -1760,9 +1880,14 @@
     }
 
     function startAIWorkout() {
-      const cycleIdx = parseInt(localStorage.getItem('spartan_ai_cycle_idx') || '0', 10);
-      const currentWorkout = AI_WORKOUT_CYCLES[cycleIdx % AI_WORKOUT_CYCLES.length];
-      currentWorkoutQueue = JSON.parse(JSON.stringify(currentWorkout.exercises));
+      const custom = getCustomWorkout();
+      if (custom && custom.exercises && custom.exercises.length > 0) {
+        currentWorkoutQueue = JSON.parse(JSON.stringify(custom.exercises));
+      } else {
+        const cycleIdx = parseInt(localStorage.getItem('spartan_ai_cycle_idx') || '0', 10);
+        const currentWorkout = AI_WORKOUT_CYCLES[cycleIdx % AI_WORKOUT_CYCLES.length];
+        currentWorkoutQueue = JSON.parse(JSON.stringify(currentWorkout.exercises));
+      }
       beginWorkoutSession();
     }
 
@@ -1783,6 +1908,7 @@
       URL.revokeObjectURL(url);
     }
     // Init custom UI, theme, settings and AI toggle on load
+    checkIncomingCustomWorkout();
     renderCustomQueueUI();
     applyTheme(currentTheme);
     updateSettingsUI();

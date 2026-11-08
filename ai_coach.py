@@ -294,9 +294,187 @@ def get_expert_spartan_answer(question: str) -> str:
     )
 
 
-def answer_athlete_question(question: str, user_profile: dict = None) -> str:
-    """Главная функция ответа на вопросы атлета."""
-    # 1. Если задан ключ Gemini API — сначала запрашиваем живую нейросеть
+# Готовые пресеты для офлайн-пересборки или альтернатив
+PRESET_WORKOUTS = {
+    "legs": {
+        "title": "Спартанский Низ & Пресс",
+        "focus": "Квадрицепсы, икры и мышцы пресса",
+        "durationEst": "~12-14 мин",
+        "restSec": 60,
+        "aiRationale": "Базовый комплекс для развития силы ног и стабильности кора без осевой нагрузки на позвоночник.",
+        "exercises": [
+            {"id": "squats", "name": "Глубокие приседания", "type": "reps", "target": 25, "muscle": "Квадрицепсы, ягодицы", "tip": "Колени смотрят на носки, спина прямая"},
+            {"id": "crunches", "name": "Скручивания на пресс", "type": "reps", "target": 20, "muscle": "Пресс", "tip": "Не тяни шею руками, выдох на сжатии"},
+            {"id": "plank", "name": "Планка на локтях", "type": "time", "target": 45, "muscle": "Глубокий кор", "tip": "Сжимай ягодицы, таз слегка вперед"}
+        ]
+    },
+    "shoulders": {
+        "title": "Плечи из Стали & Кор",
+        "focus": "Передние и средние дельты, трицепс, стабильность",
+        "durationEst": "~10-12 мин",
+        "restSec": 60,
+        "aiRationale": "Акцентная калистеника для формирования мощных плеч и жесткого плечевого пояса.",
+        "exercises": [
+            {"id": "pike_pushups", "name": "Отжимания домиком (Pike)", "type": "reps", "target": 12, "muscle": "Плечи (дельты), трицепс", "tip": "Таз высоко, опускайся ко лбу"},
+            {"id": "shoulder_taps", "name": "Касания плеч в планке", "type": "reps", "target": 20, "muscle": "Плечи и кор", "tip": "Корпус держи неподвижно, не раскачивай таз"},
+            {"id": "pushups", "name": "Отжимания широкие", "type": "reps", "target": 15, "muscle": "Грудь, передняя дельта", "tip": "Полная амплитуда, локти 45°"}
+        ]
+    },
+    "pull": {
+        "title": "Спина, Турник & Хват",
+        "focus": "Широчайшие мышцы спины, бицепс, предплечья",
+        "durationEst": "~12-15 мин",
+        "restSec": 60,
+        "aiRationale": "Тяговый спартанский комплекс для расширения спины и железного хвата.",
+        "exercises": [
+            {"id": "pullups", "name": "Подтягивания чистые", "type": "reps", "target": 8, "muscle": "Широчайшие, бицепс", "tip": "Своди лопатки в начале движения, подбородок за турник"},
+            {"id": "dips", "name": "Отжимания на брусьях", "type": "reps", "target": 10, "muscle": "Низ груди, трицепс", "tip": "Угол 90° в локтях, контролируемый спуск"},
+            {"id": "hang", "name": "Вис на турнике на хват", "type": "time", "target": 45, "muscle": "Предплечья, хват", "tip": "Максимально крепко держи перекладину"}
+        ]
+    },
+    "core": {
+        "title": "Монолитный Пресс",
+        "focus": "Прямая мышца живота, косые мышцы и кор",
+        "durationEst": "~10-12 мин",
+        "restSec": 50,
+        "aiRationale": "Изометрический плотный комплекс для прорисовки пресса и защиты поясницы.",
+        "exercises": [
+            {"id": "plank", "name": "Спартанская планка", "type": "time", "target": 50, "muscle": "Все мышцы кора", "tip": "Таз не провисает, ягодицы как камень"},
+            {"id": "crunches", "name": "Скручивания на пресс", "type": "reps", "target": 25, "muscle": "Верх и середина пресса", "tip": "Выдох на сжатии, фиксация вверху"},
+            {"id": "glute_bridge", "name": "Ягодичный мостик с паузой", "type": "reps", "target": 20, "muscle": "Ягодицы, поясница", "tip": "Пауза 2 секунды в верхней точке"}
+        ]
+    },
+    "chest": {
+        "title": "Спартанская Грудь & Трицепс",
+        "focus": "Грудные мышцы, трицепс и статический кор",
+        "durationEst": "~10-12 мин",
+        "restSec": 60,
+        "aiRationale": "Интенсивная комбинация отжиманий разного угла для мощного взрывного толчка.",
+        "exercises": [
+            {"id": "pushups", "name": "Отжимания от пола", "type": "reps", "target": 20, "muscle": "Грудь, трицепс", "tip": "Локти под 45°, касание грудью пола"},
+            {"id": "plank", "name": "Планка на предплечьях", "type": "time", "target": 45, "muscle": "Кор", "tip": "Напрягай пресс и ягодицы"},
+            {"id": "pushups", "name": "Отжимания узким хватом", "type": "reps", "target": 12, "muscle": "Трицепс, внутренняя часть груди", "tip": "Локти прижаты к ребрам"}
+        ]
+    }
+}
+
+
+def is_workout_rebuild_request(text: str) -> bool:
+    """Определяет, просит ли пользователь пересобрать или сменить тренировку."""
+    q = text.lower().strip()
+    # Чисто технические вопросы не должны запускать генерацию комплекса
+    if any(k in q for k in ["как дышать", "как правильно", "почему болит", "техника упражнен"]):
+        return False
+
+    triggers = [
+        "друг", "поменяй", "смени", "состав", "собери", "программ",
+        "план", "комплекс", "постро", "настрой трениров", "новую трениров",
+        "альтернатив", "тренировку на", "тренировка на", "сделай трениров",
+        "дай трениров", "хочу трениров", "сегодня хочу", "пересобери", "перестрой"
+    ]
+    return any(t in q for t in triggers)
+
+
+def parse_workout_json(text: str) -> dict:
+    """Извлекает и парсит JSON с тренировкой от нейросети."""
+    if not text:
+        return None
+    s = text.strip()
+    first_brace = s.find("{")
+    last_brace = s.rfind("}")
+    if first_brace != -1 and last_brace != -1:
+        s = s[first_brace:last_brace+1]
+        try:
+            data = json.loads(s)
+            if "workout" in data and "exercises" in data["workout"]:
+                return data
+        except Exception:
+            pass
+    return None
+
+
+def get_preset_workout(question: str) -> tuple:
+    """Выбирает подходящий офлайн-пресет по ключевым словам в вопросе."""
+    q = question.lower()
+    if any(k in q for k in ["ног", "присед", "бедро", "выпад"]):
+        w = PRESET_WORKOUTS["legs"]
+        reply = "Принято, боец! Пересобрал тренировку под низ тела и пресс. Нажимай кнопку запуска — задание загружено прямо в приложение!"
+        return reply, w
+    elif any(k in q for k in ["плеч", "дельт", "руки", "трицепс"]):
+        w = PRESET_WORKOUTS["shoulders"]
+        reply = "Отличный выбор, спартанец! Пересобрал сет с акцентом на плечевой пояс и дельты. Запускай тренировку в Spartan!"
+        return reply, w
+    elif any(k in q for k in ["турник", "спин", "подтягив", "брусь"]):
+        w = PRESET_WORKOUTS["pull"]
+        reply = "Спартанская классика: тяга и брусья! Комплекс готов и ждет тебя в приложении. Покажи чистую технику!"
+        return reply, w
+    elif any(k in q for k in ["пресс", "живот", "кор", "планк"]):
+        w = PRESET_WORKOUTS["core"]
+        reply = "Будет гореть! Пересобрал программу с упором на монолитный кор и пресс. Жми кнопку ниже и приступай!"
+        return reply, w
+    else:
+        w = PRESET_WORKOUTS["chest"]
+        reply = "Без проблем, спартанец! Пересобрал программу: мощный комплекс на грудь, плечи и кор готов. Запускай в приложении!"
+        return reply, w
+
+
+def process_athlete_message(question: str, user_profile: dict = None) -> dict:
+    """
+    Основной диспетчер сообщений атлета.
+    Возвращает словарь:
+    {
+        "coach_reply": str,          # Текст напутствия для чата
+        "custom_workout": dict | None # Структурированное задание для WebApp (если запрошена пересборка)
+    }
+    """
+    # 1. Запрос на пересборку / новую тренировку
+    if is_workout_rebuild_request(question):
+        if GEMINI_API_KEY:
+            prompt = (
+                "Ты — Спартанский Личный Тренер (маскот Spartan Trainer).\n"
+                f"Атлет просит составить или пересобрать тренировочный комплекс: «{question}».\n"
+                "Составь сбалансированную тренировку по калистенике (3-4 упражнения) и дай спартанское напутствие (2-3 предложения).\n\n"
+                "Ответь СТРОГО в формате JSON без кавычек markdown:\n"
+                "{\n"
+                '  "coach_speech": "Спартанское напутствие и объяснение логики комплекса в 2-3 предложениях",\n'
+                '  "workout": {\n'
+                '    "title": "Краткое название (например: Спартанские Плечи & Кор)",\n'
+                '    "focus": "На какие мышцы акцент (например: Дельты, трицепс и глубокий кор)",\n'
+                '    "durationEst": "~12-14 мин",\n'
+                '    "restSec": 60,\n'
+                '    "aiRationale": "1-2 предложения, почему AI выбрал эти упражнения",\n'
+                '    "exercises": [\n'
+                '      {\n'
+                '        "id": "pushups",\n'
+                '        "name": "Название упражнения",\n'
+                '        "type": "reps",\n'
+                '        "target": 20,\n'
+                '        "muscle": "Мышечная группа",\n'
+                '        "tip": "Совет по идеальной технике"\n'
+                '      }\n'
+                '    ]\n'
+                '  }\n'
+                "}\n"
+                "type может быть только 'reps' (повторения) или 'time' (секунды). "
+                "Упражнения: отжимания, приседания, выпады, планка, подтягивания, брусья, скручивания, вис, мостик, отжимания домиком, касания плеч."
+            )
+            ai_resp = query_gemini_api(prompt)
+            parsed = parse_workout_json(ai_resp)
+            if parsed and "workout" in parsed:
+                speech = parsed.get("coach_speech", "Тренировка пересобрана, спартанец! Запускай по кнопке ниже.")
+                return {
+                    "coach_reply": speech,
+                    "custom_workout": parsed["workout"]
+                }
+
+        # Если API недоступен или вернул сбой — выдаем надежный спартанский пресет
+        fallback_speech, fallback_workout = get_preset_workout(question)
+        return {
+            "coach_reply": fallback_speech,
+            "custom_workout": fallback_workout
+        }
+
+    # 2. Обычный вопрос тренеру (техника, питание, дыхание, мотивация)
     if GEMINI_API_KEY:
         profile_hint = ""
         if user_profile:
@@ -307,10 +485,22 @@ def answer_athlete_question(question: str, user_profile: dict = None) -> str:
         prompt = f"{SYSTEM_INSTRUCTION}\n{profile_hint}Вопрос атлета: {question}\nОтветь кратко, емко, по-спартански."
         ai_resp = query_gemini_api(prompt)
         if ai_resp:
-            return ai_resp
+            return {
+                "coach_reply": ai_resp,
+                "custom_workout": None
+            }
 
-    # 2. Если ключа нет или API временно недоступен — используем спартанскую базу знаний
-    return get_expert_spartan_answer(question)
+    # Офлайн ответ из базы знаний
+    return {
+        "coach_reply": get_expert_spartan_answer(question),
+        "custom_workout": None
+    }
+
+
+def answer_athlete_question(question: str, user_profile: dict = None) -> str:
+    """Для обратной совместимости: возвращает только текст ответа."""
+    res = process_athlete_message(question, user_profile)
+    return res["coach_reply"]
 
 
 def generate_spartan_calibration(location: str = "street", level: str = "intermediate") -> dict:

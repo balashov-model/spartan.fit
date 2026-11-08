@@ -13,7 +13,9 @@ import json
 import time
 import urllib.request
 import urllib.error
+import urllib.parse
 import ssl
+import base64
 
 import database
 import ai_coach
@@ -89,17 +91,36 @@ def send_welcome_message(chat_id: int, user_first_name: str, username: str = "")
     })
 
 
-def send_coach_reply(chat_id: int, text_reply: str):
-    reply_markup = {
-        "inline_keyboard": [
-            [
-                {
-                    "text": "🏋️ Начать тренировку",
-                    "web_app": {"url": WEB_APP_URL}
-                }
-            ]
-        ]
-    }
+def send_coach_reply(chat_id: int, text_reply: str, custom_workout: dict = None):
+    buttons = []
+
+    if custom_workout and "exercises" in custom_workout and len(custom_workout["exercises"]) > 0:
+        workout_title = custom_workout.get("title", "Новая тренировка")
+        compact_json = json.dumps(custom_workout, ensure_ascii=False)
+        b64_str = base64.b64encode(compact_json.encode('utf-8')).decode('utf-8')
+        custom_url = f"{WEB_APP_URL}?workout={urllib.parse.quote(b64_str)}"
+
+        buttons.append([
+            {
+                "text": f"🔥 Запустить: {workout_title}",
+                "web_app": {"url": custom_url}
+            }
+        ])
+        buttons.append([
+            {
+                "text": "📋 Открыть стандартный план",
+                "web_app": {"url": WEB_APP_URL}
+            }
+        ])
+    else:
+        buttons.append([
+            {
+                "text": "🏋️ Начать тренировку",
+                "web_app": {"url": WEB_APP_URL}
+            }
+        ])
+
+    reply_markup = {"inline_keyboard": buttons}
     make_request("sendMessage", {
         "chat_id": chat_id,
         "text": f"⚔️ **Тренер Спартан:**\n\n{text_reply}",
@@ -155,10 +176,10 @@ def main():
                         if text.startswith("/start") or text.startswith("/app"):
                             send_welcome_message(chat_id, first_name, username)
                         else:
-                            # Вопрос тренеру Спартану
+                            # Обработка вопроса или запроса на тренировку
                             user_profile = database.get_user(chat_id)
-                            reply = ai_coach.answer_athlete_question(text, user_profile)
-                            send_coach_reply(chat_id, reply)
+                            res = ai_coach.process_athlete_message(text, user_profile)
+                            send_coach_reply(chat_id, res["coach_reply"], res.get("custom_workout"))
 
                     elif "voice" in msg or "audio" in msg:
                         # Голосовое сообщение
