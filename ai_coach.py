@@ -28,7 +28,7 @@ _load_env()
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 # Модель Google Gemini
-MODEL_NAME = "gemini-3.8-flash"
+MODEL_NAME = "gemini-3.5-flash"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent"
 
 SYSTEM_INSTRUCTION = (
@@ -104,9 +104,10 @@ FALLBACK_WORKOUTS = {
 
 
 import subprocess
+import time
 
 def query_gemini_api(prompt: str) -> str:
-    """Выполняет запрос к Gemini API (gemini-3.8-flash) через нативный curl или urllib с повышенным тайм-аутом."""
+    """Выполняет быстрый запрос к Gemini API (gemini-3.5-flash) через urllib или curl."""
     if not GEMINI_API_KEY:
         return ""
 
@@ -114,36 +115,13 @@ def query_gemini_api(prompt: str) -> str:
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.7,
-            "maxOutputTokens": 350
+            "maxOutputTokens": 2000
         }
     }
     payload_bytes = json.dumps(payload).encode("utf-8")
+    t0 = time.time()
 
-    # Способ 1: Нативный macOS curl (надежнее работает через любые системные VPN / TUN / Прокси)
-    try:
-        cmd = [
-            "curl", "-s", "-m", "25",
-            "--globoff",
-            "-X", "POST",
-            f"{API_URL}?key={GEMINI_API_KEY}",
-            "-H", "Content-Type: application/json",
-            "-d", "@-"
-        ]
-        res = subprocess.run(cmd, input=payload_bytes, capture_output=True, timeout=26)
-        if res.returncode == 0 and res.stdout:
-            data = json.loads(res.stdout.decode("utf-8", errors="ignore"))
-            if "candidates" in data and data["candidates"]:
-                text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-                print("⚡ [Gemini 3.8 Flash]: Ответ успешно сгенерирован нейросетью!")
-                return text
-            elif "error" in data:
-                err_msg = data["error"].get("message", "Unknown error")
-                print(f"⚠️ [Gemini API Ошибка]: {err_msg[:150]}")
-                return ""
-    except Exception as e:
-        pass
-
-    # Способ 2: Запасной urllib (с тайм-аутом 25 сек)
+    # Способ 1: Прямой urllib (высокая скорость, без лишних процессов)
     try:
         ctx = ssl._create_unverified_context()
         req = urllib.request.Request(
@@ -151,16 +129,44 @@ def query_gemini_api(prompt: str) -> str:
             data=payload_bytes,
             headers={"Content-Type": "application/json", "User-Agent": "SpartanTrainerBot/1.0"}
         )
-        with urllib.request.urlopen(req, context=ctx, timeout=25) as resp:
+        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
-            print("⚡ [Gemini 3.8 Flash]: Ответ успешно сгенерирован нейросетью (urllib)!")
-            return text
+            if "candidates" in data and data["candidates"]:
+                text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                dt = time.time() - t0
+                print(f"⚡ [Gemini 3.5 Flash]: Ответ сгенерирован нейросетью за {dt:.1f} сек!")
+                return text
     except urllib.error.HTTPError as e:
         body = e.read().decode('utf-8', errors='ignore')
         print(f"⚠️ [Gemini API HTTP {e.code}]: {body[:150]}")
     except Exception as e:
-        print(f"⚠️ [Gemini API Ошибка связи]: {e} (сервер Google не успел ответить за 25 сек)")
+        # Если urllib сбросил соединение или не успел, пробуем curl
+        pass
+
+    # Способ 2: Запасной curl через системный транспорт macOS
+    try:
+        cmd = [
+            "curl", "-s", "-m", "15",
+            "--globoff",
+            "-X", "POST",
+            f"{API_URL}?key={GEMINI_API_KEY}",
+            "-H", "Content-Type: application/json",
+            "-d", "@-"
+        ]
+        res = subprocess.run(cmd, input=payload_bytes, capture_output=True, timeout=16)
+        if res.returncode == 0 and res.stdout:
+            data = json.loads(res.stdout.decode("utf-8", errors="ignore"))
+            if "candidates" in data and data["candidates"]:
+                text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                dt = time.time() - t0
+                print(f"⚡ [Gemini 3.5 Flash (curl)]: Ответ сгенерирован нейросетью за {dt:.1f} сек!")
+                return text
+            elif "error" in data:
+                err_msg = data["error"].get("message", "Unknown error")
+                print(f"⚠️ [Gemini API Ошибка]: {err_msg[:150]}")
+                return ""
+    except Exception as e:
+        print(f"⚠️ [Gemini API Ошибка связи]: {e}")
 
     return ""
 
