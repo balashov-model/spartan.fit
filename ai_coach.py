@@ -115,7 +115,7 @@ def query_gemini_api(prompt: str) -> str:
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.7,
-            "maxOutputTokens": 2000
+            "maxOutputTokens": 1000
         }
     }
     payload_bytes = json.dumps(payload).encode("utf-8")
