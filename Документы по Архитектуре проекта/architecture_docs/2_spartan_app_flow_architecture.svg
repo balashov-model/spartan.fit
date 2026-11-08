@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" width="1400" height="960">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+
+    <marker id="arrTeal" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#14b8a6"/>
+    </marker>
+
+    <marker id="arrGreen" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+    </marker>
+
+    <marker id="arrAmber" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+    </marker>
+
+    <marker id="arrZinc" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#71717a"/>
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .title { font-size: 26px; font-weight: 900; fill: #ffffff; letter-spacing: -0.5px; }
+    .subtitle { font-size: 13px; font-weight: 600; fill: #14b8a6; text-transform: uppercase; letter-spacing: 1.5px; }
+    .card-title { font-size: 14px; font-weight: 800; fill: #ffffff; }
+    .card-desc { font-size: 11px; font-weight: 400; fill: #a1a1aa; line-height: 1.4; }
+    .pill-label { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1400" height="960" fill="url(#bgGrad2)"/>
+
+  <!-- Header -->
+  <g transform="translate(60, 45)">
+    <rect x="0" y="0" width="42" height="42" rx="10" fill="#14b8a6" fill-opacity="0.15" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="21" y="27" font-size="20" text-anchor="middle" fill="#14b8a6">📱</text>
+    <text x="56" y="16" class="subtitle">Архитектурная спецификация • Spartan Web Mini App</text>
+    <text x="56" y="38" class="title">Схема 2: Потоки экранов, логика AI и тренировочный цикл</text>
+  </g>
+
+  <!-- ==================== STAGE 1: ENTRY & HOME SCREEN ==================== -->
+  <g transform="translate(60, 115)" filter="url(#shadow2)">
+    <rect width="380" height="780" rx="20" fill="#121215" stroke="#27272a" stroke-width="1.5"/>
+    
+    <!-- Title -->
+    <rect x="18" y="16" width="30" height="30" rx="8" fill="#14b8a6" fill-opacity="0.15"/>
+    <text x="33" y="36" font-size="15" text-anchor="middle">🏠</text>
+    <text x="58" y="30" class="card-title">ЭКРАН 1: ГЛАВНЫЙ (screen-home)</text>
+    <text x="58" y="44" class="card-desc">Фокус дня «Без лишних мыслей»</text>
+    <line x1="18" y1="58" x2="362" y2="58" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Switch Item -->
+    <rect x="18" y="70" width="344" height="60" rx="12" fill="#18181b" stroke="#14b8a6" stroke-width="1.2"/>
+    <text x="32" y="93" font-size="12" font-weight="700" fill="#ffffff">⚡ Переключатель «Тренироваться с AI»</text>
+    <text x="32" y="112" font-size="10" fill="#a1a1aa">Сохраняется в LocalStorage ('spartan_ai_mode')</text>
+
+    <!-- Branch A: AI Mode ON -->
+    <g transform="translate(18, 145)">
+      <rect width="344" height="235" rx="14" fill="#18181b" stroke="#14b8a6" stroke-width="1.2"/>
+      <rect x="12" y="10" width="80" height="18" rx="6" fill="#14b8a6" fill-opacity="0.2"/>
+      <text x="52" y="22" class="pill-label" fill="#14b8a6" text-anchor="middle">AI РЕЖИМ ВКЛ</text>
+      
+      <!-- Condition 1: Not trained today -->
+      <rect x="12" y="38" width="320" height="85" rx="10" fill="#14b8a6" fill-opacity="0.1" stroke="#14b8a6" stroke-width="1"/>
+      <text x="24" y="58" font-size="11" font-weight="800" fill="#ffffff">Состояние 1: Тренировка предстоит</text>
+      <text x="24" y="76" font-size="10" font-weight="700" fill="#2dd4bf">• Кнопка [ 🔥 Начать: {Название дня} ]</text>
+      <text x="24" y="94" font-size="10" font-weight="700" fill="#ffffff">• Плашка [ 📋 Ознакомиться с программой ]</text>
+      <text x="24" y="110" font-size="9" fill="#a1a1aa">Выбор других программ полностью скрыт</text>
+
+      <!-- Condition 2: Trained today -->
+      <rect x="12" y="132" width="320" height="88" rx="10" fill="#27272a"/>
+      <text x="24" y="152" font-size="11" font-weight="800" fill="#10b981">Состояние 2: Цель дня закрыта</text>
+      <text x="24" y="170" font-size="10" fill="#d1d5db">• Статус «✅ Отдых и суперкомпенсация»</text>
+      <text x="24" y="186" font-size="10" fill="#d1d5db">• Таймер «Следующая тренировка: Завтра 19:00»</text>
+      <text x="24" y="204" font-size="10" font-weight="700" fill="#2dd4bf">• Плашка [ 👁️ Программа следующего дня ]</text>
+    </g>
+
+    <!-- Branch B: Classic Mode -->
+    <g transform="translate(18, 395)">
+      <rect width="344" height="110" rx="14" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+      <rect x="12" y="10" width="125" height="18" rx="6" fill="#3f3f46"/>
+      <text x="74" y="22" class="pill-label" fill="#ffffff" text-anchor="middle">КЛАССИКА (AI ВЫКЛ)</text>
+
+      <rect x="12" y="38" width="320" height="58" rx="10" fill="#27272a"/>
+      <text x="24" y="58" font-size="11" font-weight="800" fill="#ffffff">• Кнопка [ ▶ Начать тренировку ]</text>
+      <text x="24" y="74" font-size="10" fill="#a1a1aa">Открывает готовые пресеты или конструктор</text>
+    </g>
+
+    <!-- Navigation buttons -->
+    <g transform="translate(18, 520)">
+      <rect width="165" height="48" rx="10" fill="#18181b" stroke="#27272a"/>
+      <text x="82" y="29" font-size="11" font-weight="700" fill="#e4e4e7" text-anchor="middle">📊 Статистика</text>
+
+      <rect x="179" y="0" width="165" height="48" rx="10" fill="#18181b" stroke="#27272a"/>
+      <text x="261" y="29" font-size="11" font-weight="700" fill="#e4e4e7" text-anchor="middle">⚙️ Настройки</text>
+    </g>
+
+    <!-- Philosophy badge -->
+    <rect x="18" y="585" width="344" height="175" rx="14" fill="#18181b" stroke="#27272a"/>
+    <text x="32" y="612" font-size="11" font-weight="800" fill="#14b8a6">СПАРТАНСКАЯ ЭРГОНОМИКА:</text>
+    <text x="32" y="634" class="card-desc">• Никаких всплывающих системных стрелок ввода</text>
+    <text x="32" y="652" class="card-desc">• Только физические кнопки +/- для кнопочного ввода</text>
+    <text x="32" y="670" class="card-desc">• 1:1 соотношение сторон карточек для брусьев</text>
+    <text x="32" y="688" class="card-desc">• Офлайн работа даже без связи с сервером</text>
+    <text x="32" y="706" class="card-desc">• Вибро-отклик через Telegram Haptic Feedback</text>
+    <text x="32" y="724" class="card-desc">• Звуковые сигналы через Web Audio API</text>
+  </g>
+
+  <!-- ==================== STAGE 2: MODAL AI PROGRAM PREVIEW ==================== -->
+  <g transform="translate(470, 115)" filter="url(#shadow2)">
+    <rect width="400" height="375" rx="20" fill="#121215" stroke="#14b8a6" stroke-width="1.5"/>
+    <rect x="18" y="16" width="30" height="30" rx="8" fill="#14b8a6" fill-opacity="0.15"/>
+    <text x="33" y="36" font-size="15" text-anchor="middle">👁️</text>
+    <text x="58" y="30" class="card-title">МОДАЛКА: ОЗНАКОМЛЕНИЕ С AI ПЛАНОМ</text>
+    <text x="58" y="44" class="card-desc">modal-ai-program (Вызывается по клику на плашку)</text>
+    <line x1="18" y1="58" x2="382" y2="58" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Logic Box -->
+    <g transform="translate(18, 70)">
+      <rect width="364" height="100" rx="12" fill="#18181b" stroke="#14b8a6" stroke-width="1"/>
+      <text x="16" y="24" font-size="11" font-weight="800" fill="#14b8a6">🤖 Логика построения от AI:</text>
+      <text x="16" y="44" class="card-desc">«AI подобрал этот комплекс для акцентированного развития</text>
+      <text x="16" y="60" class="card-desc">толкающей силы и стабилизации кора. Балансировка объема</text>
+      <text x="16" y="76" class="card-desc">предотвращает перегрузку плечевого пояса»</text>
+    </g>
+
+    <!-- Plan details -->
+    <g transform="translate(18, 180)">
+      <rect width="364" height="110" rx="12" fill="#18181b" stroke="#27272a"/>
+      <text x="16" y="24" font-size="11" font-weight="800" fill="#ffffff">Состав тренировки и целевые мышцы:</text>
+      <text x="16" y="44" font-size="10" fill="#e4e4e7">1. Отжимания — 20 повт. <tspan fill="#14b8a6">(Грудные, трицепс)</tspan></text>
+      <text x="16" y="64" font-size="10" fill="#e4e4e7">2. Планка — 45 сек. <tspan fill="#14b8a6">(Мышцы кора, пресс)</tspan></text>
+      <text x="16" y="84" font-size="10" fill="#e4e4e7">3. Отжимания (добивка) — 15 повт. <tspan fill="#14b8a6">(Выносливость)</tspan></text>
+    </g>
+
+    <!-- Action button -->
+    <rect x="18" y="305" width="364" height="50" rx="12" fill="#14b8a6"/>
+    <text x="200" y="336" font-size="13" font-weight="900" fill="#09090b" text-anchor="middle">🔥 [ НАЧАТЬ ЭТУ ТРЕНИРОВКУ СЕЙЧАС ]</text>
+  </g>
+
+  <!-- Connect Home to Modal -->
+  <path d="M 440 230 L 470 230" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrTeal)"/>
+  <rect x="442" y="208" width="24" height="16" rx="4" fill="#09090b"/>
+  <text x="454" y="220" font-size="9" fill="#14b8a6" text-anchor="middle" font-weight="800">клик</text>
+
+  <!-- ==================== STAGE 3: CORE WORKOUT EXECUTION ==================== -->
+  <g transform="translate(900, 115)" filter="url(#shadow2)">
+    <rect width="440" height="520" rx="20" fill="#121215" stroke="#14b8a6" stroke-width="1.5"/>
+    <rect x="18" y="16" width="30" height="30" rx="8" fill="#14b8a6" fill-opacity="0.15"/>
+    <text x="33" y="36" font-size="15" text-anchor="middle">⏱️</text>
+    <text x="58" y="30" class="card-title">ЦИКЛ ТРЕНИРОВКИ (WORKOUT LOOP)</text>
+    <text x="58" y="44" class="card-desc">Пошаговое прохождение без рутины</text>
+    <line x1="18" y1="58" x2="422" y2="58" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Screen: Active -->
+    <g transform="translate(18, 72)">
+      <rect width="404" height="135" rx="14" fill="#18181b" stroke="#14b8a6" stroke-width="1.2"/>
+      <text x="16" y="24" font-size="12" font-weight="800" fill="#14b8a6">ШАГ А: screen-active (Выполнение упражнения)</text>
+      <text x="16" y="44" class="card-desc">• Индикатор прогресса: «Шаг 1 из 3» + полоса прогресса</text>
+      <text x="16" y="62" class="card-desc">• 1:1 квадратная карточка (для брусьев и отжиманий)</text>
+      <text x="16" y="80" class="card-desc">• Повторения: Кнопка «Сделано 20 повт.» с быстрой регулировкой</text>
+      <text x="16" y="98" class="card-desc">• Статика: Обратный отсчет таймера (Пауза / Сброс / Далее)</text>
+      <text x="16" y="116" class="card-desc">• Общий секундомер сессии непрерывно считает в фоне</text>
+    </g>
+
+    <!-- Loop Arrow Down -->
+    <path d="M 220 207 L 220 227" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrTeal)"/>
+
+    <!-- Screen: Rest -->
+    <g transform="translate(18, 227)">
+      <rect width="404" height="120" rx="14" fill="#18181b" stroke="#38bdf8" stroke-width="1.2"/>
+      <text x="16" y="24" font-size="12" font-weight="800" fill="#38bdf8">ШАГ Б: screen-rest (Интервал отдыха)</text>
+      <text x="16" y="44" class="card-desc">• Обратный отсчет: 60 сек (настраивается в настройках)</text>
+      <text x="16" y="62" class="card-desc">• Подсказка следующего упражнения и целевой нагрузки</text>
+      <text x="16" y="80" class="card-desc">• Звуковые сигналы на последних 3 секундах</text>
+      <text x="16" y="98" class="card-desc">• Кнопка [ Пропустить отдых ] для немедленного продолжения</text>
+    </g>
+
+    <!-- Loop Arrow Up (Cycle back) -->
+    <path d="M 400 235 C 440 235 440 140 400 140" fill="none" stroke="#71717a" stroke-width="1.5" stroke-dasharray="3 3" marker-end="url(#arrZinc)"/>
+    <text x="430" y="190" font-size="9" fill="#a1a1aa" text-anchor="middle">след. подход</text>
+
+    <!-- Down to Finished -->
+    <path d="M 220 347 L 220 367" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#arrGreen)"/>
+
+    <!-- Screen: Finished -->
+    <g transform="translate(18, 367)">
+      <rect width="404" height="135" rx="14" fill="#18181b" stroke="#10b981" stroke-width="1.2"/>
+      <text x="16" y="24" font-size="12" font-weight="800" fill="#10b981">ШАГ В: screen-finished (Успешное завершение)</text>
+      <text x="16" y="44" class="card-desc">• Звуковой победный аккорд + виброотклик Haptics</text>
+      <text x="16" y="62" class="card-desc">• Анимация конфетти (JS Canvas Confetti)</text>
+      <text x="16" y="80" class="card-desc">• Сводка: Общее время тренировки и суммарно выполненные повторы</text>
+      <text x="16" y="98" class="card-desc">• Автосохранение в spartan_logs и фиксация даты тренировки</text>
+      <text x="16" y="116" class="card-desc">• Переход в статус отдыха на главном экране</text>
+    </g>
+  </g>
+
+  <!-- Connect Start Workout to Loop -->
+  <path d="M 834 330 L 900 330" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrTeal)"/>
+
+  <!-- ==================== STAGE 4: STATS & PROGRESS TRACKING ==================== -->
+  <g transform="translate(470, 510)" filter="url(#shadow2)">
+    <rect width="870" height="385" rx="20" fill="#121215" stroke="#27272a" stroke-width="1.5"/>
+    <rect x="18" y="16" width="30" height="30" rx="8" fill="#14b8a6" fill-opacity="0.15"/>
+    <text x="33" y="36" font-size="15" text-anchor="middle">📊</text>
+    <text x="58" y="30" class="card-title">ЭКРАН СТАТИСТИКИ И ПРОГРЕСС ПО УПРАЖНЕНИЯМ (screen-stats)</text>
+    <text x="58" y="44" class="card-desc">Отслеживание персональных рекордов (PR), динамики роста и суммарных объемов</text>
+    <line x1="18" y1="58" x2="852" y2="58" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Left Block: High Level Stats -->
+    <g transform="translate(18, 72)">
+      <rect width="260" height="85" rx="12" fill="#18181b" stroke="#27272a"/>
+      <text x="16" y="24" font-size="11" font-weight="700" fill="#a1a1aa">СВОДНЫЕ СЧЕТЧИКИ</text>
+      <text x="16" y="48" font-size="18" font-weight="900" fill="#ffffff">Всего тренировок: N</text>
+      <text x="16" y="70" font-size="18" font-weight="900" fill="#14b8a6">Общий объем: N повт.</text>
+    </g>
+
+    <!-- Right Block: Exercise Progress List -->
+    <g transform="translate(295, 72)">
+      <rect width="557" height="230" rx="14" fill="#18181b" stroke="#14b8a6" stroke-width="1.2"/>
+      <text x="20" y="24" font-size="12" font-weight="800" fill="#14b8a6">ПРОГРЕСС ПО КАЖДОМУ УПРАЖНЕНИЮ (spartan_exercise_records)</text>
+      
+      <!-- Table of Exercises -->
+      <g transform="translate(16, 38)">
+        <rect width="525" height="32" rx="8" fill="#27272a"/>
+        <text x="12" y="20" font-size="11" font-weight="700" fill="#ffffff">💥 Отжимания</text>
+        <text x="180" y="20" font-size="10" fill="#a1a1aa">Всего: 180 повт. • 9 сетов</text>
+        <text x="360" y="20" font-size="10" font-weight="700" fill="#10b981">Динамика: +5 повт.</text>
+        <text x="470" y="20" font-size="11" font-weight="900" fill="#14b8a6">PR 25</text>
+      </g>
+
+      <g transform="translate(16, 75)">
+        <rect width="525" height="32" rx="8" fill="#27272a"/>
+        <text x="12" y="20" font-size="11" font-weight="700" fill="#ffffff">🧗 Подтягивания</text>
+        <text x="180" y="20" font-size="10" fill="#a1a1aa">Всего: 48 повт. • 6 сетов</text>
+        <text x="360" y="20" font-size="10" font-weight="700" fill="#10b981">Динамика: +2 повт.</text>
+        <text x="470" y="20" font-size="11" font-weight="900" fill="#14b8a6">PR 10</text>
+      </g>
+
+      <g transform="translate(16, 112)">
+        <rect width="525" height="32" rx="8" fill="#27272a"/>
+        <text x="12" y="20" font-size="11" font-weight="700" fill="#ffffff">⚡ Брусья</text>
+        <text x="180" y="20" font-size="10" fill="#a1a1aa">Всего: 65 повт. • 5 сетов</text>
+        <text x="360" y="20" font-size="10" font-weight="700" fill="#a1a1aa">Динамика: Стабильно</text>
+        <text x="470" y="20" font-size="11" font-weight="900" fill="#14b8a6">PR 15</text>
+      </g>
+
+      <g transform="translate(16, 149)">
+        <rect width="525" height="32" rx="8" fill="#27272a"/>
+        <text x="12" y="20" font-size="11" font-weight="700" fill="#ffffff">🛡️ Планка</text>
+        <text x="180" y="20" font-size="10" fill="#a1a1aa">Всего: 240 сек. • 4 сета</text>
+        <text x="360" y="20" font-size="10" font-weight="700" fill="#10b981">Динамика: +15 сек.</text>
+        <text x="470" y="20" font-size="11" font-weight="900" fill="#14b8a6">PR 75с</text>
+      </g>
+
+      <g transform="translate(16, 186)">
+        <rect width="525" height="32" rx="8" fill="#27272a"/>
+        <text x="12" y="20" font-size="11" font-weight="700" fill="#ffffff">🦵 Приседания / ⏱️ Вис</text>
+        <text x="180" y="20" font-size="10" fill="#a1a1aa">Автоматический учет любого добавленного движения</text>
+        <text x="470" y="20" font-size="11" font-weight="900" fill="#14b8a6">PR</text>
+      </g>
+    </g>
+
+    <!-- Bottom Actions -->
+    <g transform="translate(18, 315)">
+      <rect width="400" height="50" rx="10" fill="#18181b" stroke="#27272a"/>
+      <text x="200" y="30" font-size="11" font-weight="700" fill="#e4e4e7" text-anchor="middle">📥 Кнопка «Экспорт в JSON» (Полный бэкап)</text>
+
+      <rect x="435" y="0" width="417" height="50" rx="10" fill="#18181b" stroke="#27272a"/>
+      <text x="643" y="30" font-size="11" font-weight="700" fill="#f87171" text-anchor="middle">🗑️ Кнопка «Сброс данных» (с подтверждением)</text>
+    </g>
+  </g>
+</svg>

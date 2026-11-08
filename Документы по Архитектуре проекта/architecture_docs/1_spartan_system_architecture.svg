@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 960" width="1400" height="960">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#141416"/>
+    </linearGradient>
+
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <marker id="arrowTeal" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#14b8a6"/>
+    </marker>
+
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa"/>
+    </marker>
+
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a78bfa"/>
+    </marker>
+
+    <marker id="arrowZinc" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#71717a"/>
+    </marker>
+  </defs>
+
+  <style>
+    text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    .title { font-size: 26px; font-weight: 900; fill: #ffffff; letter-spacing: -0.5px; }
+    .subtitle { font-size: 13px; font-weight: 600; fill: #14b8a6; text-transform: uppercase; letter-spacing: 1.5px; }
+    .section-title { font-size: 15px; font-weight: 800; fill: #f4f4f5; }
+    .card-title { font-size: 13px; font-weight: 700; fill: #ffffff; }
+    .card-desc { font-size: 11px; font-weight: 400; fill: #a1a1aa; line-height: 1.4; }
+    .badge { font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .flow-label { font-size: 10px; font-weight: 700; fill: #14b8a6; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1400" height="960" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g stroke="#ffffff" stroke-width="1" stroke-opacity="0.03">
+    <line x1="0" y1="160" x2="1400" y2="160"/>
+    <line x1="0" y1="360" x2="1400" y2="360"/>
+    <line x1="0" y1="560" x2="1400" y2="560"/>
+    <line x1="0" y1="760" x2="1400" y2="760"/>
+    <line x1="350" y1="0" x2="350" y2="960"/>
+    <line x1="700" y1="0" x2="700" y2="960"/>
+    <line x1="1050" y1="0" x2="1050" y2="960"/>
+  </g>
+
+  <!-- Header -->
+  <g transform="translate(60, 45)">
+    <rect x="0" y="0" width="42" height="42" rx="10" fill="#14b8a6" fill-opacity="0.15" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="21" y="27" font-size="20" text-anchor="middle" fill="#14b8a6">🛡️</text>
+    <text x="56" y="16" class="subtitle">Архитектурная спецификация • Spartan Trainer v1.0 / v2.0</text>
+    <text x="56" y="38" class="title">Схема 1: Общая архитектура экосистемы</text>
+  </g>
+
+  <!-- USER NODE (Top Center) -->
+  <g transform="translate(560, 115)" filter="url(#dropShadow)">
+    <rect width="280" height="68" rx="18" fill="#18181b" stroke="#3f3f46" stroke-width="1.5"/>
+    <rect x="14" y="14" width="40" height="40" rx="12" fill="#27272a"/>
+    <text x="34" y="39" font-size="20" text-anchor="middle">👤</text>
+    <text x="68" y="33" class="card-title">Атлет (Пользователь Telegram)</text>
+    <text x="68" y="49" class="card-desc">Войсы, текст, тренировки через Mini App</text>
+  </g>
+
+  <!-- ARROWS FROM USER -->
+  <!-- To Bot -->
+  <path d="M 640 183 L 340 250" fill="none" stroke="#60a5fa" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrowBlue)"/>
+  <rect x="420" y="200" width="130" height="20" rx="6" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+  <text x="485" y="214" font-size="10" font-weight="700" fill="#93c5fd" text-anchor="middle">Войсы и вопросы в чат</text>
+
+  <!-- To Mini App -->
+  <path d="M 760 183 L 950 250" fill="none" stroke="#14b8a6" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+  <rect x="800" y="200" width="130" height="20" rx="6" fill="#134e4a" stroke="#14b8a6" stroke-width="1"/>
+  <text x="865" y="214" font-size="10" font-weight="700" fill="#5eead4" text-anchor="middle">Кнопка «Открыть Spartan»</text>
+
+  <!-- ==================== LEFT COLUMN: TELEGRAM BOT & BACKEND ==================== -->
+  <g transform="translate(60, 255)">
+    <!-- Container Box -->
+    <rect width="520" height="645" rx="24" fill="#121215" stroke="#27272a" stroke-width="1.5" filter="url(#dropShadow)"/>
+    
+    <!-- Header -->
+    <rect x="20" y="20" width="34" height="34" rx="8" fill="#3b82f6" fill-opacity="0.15"/>
+    <text x="37" y="42" font-size="16" text-anchor="middle">🤖</text>
+    <text x="66" y="35" class="section-title">Telegram-Бот &amp; AI-Бэкенд (Python)</text>
+    <text x="66" y="49" class="card-desc">Диалоговый наставник, голосовой ввод, база SQLite</text>
+    <line x1="20" y1="68" x2="500" y2="68" stroke="#27272a" stroke-width="1"/>
+
+    <!-- Module 1: bot.py -->
+    <g transform="translate(20, 85)">
+      <rect width="480" height="110" rx="16" fill="#18181b" stroke="#3b82f6" stroke-width="1.2"/>
+      <rect x="14" y="14" width="32" height="32" rx="8" fill="#1e293b"/>
+      <text x="30" y="35" font-size="16" text-anchor="middle">⚡</text>
+      <text x="56" y="30" class="card-title">Telegram Bot Core (bot.py)</text>
+      <rect x="360" y="18" width="105" height="18" rx="6" fill="#3b82f6" fill-opacity="0.2"/>
+      <text x="412" y="30" class="badge" fill="#60a5fa" text-anchor="middle">aiogram 3.x</text>
+      <text x="56" y="52" class="card-desc">• Обработка команд /start и открытие Mini App WebAppInfo</text>
+      <text x="56" y="69" class="card-desc">• Прием голосовых войсов (.ogg / Voice note) и текста</text>
+      <text x="56" y="86" class="card-desc">• Интеграция с локальной базой данных и AI-маскотом</text>
+    </g>
+
+    <!-- Module 2: ai_coach.py -->
+    <g transform="translate(20, 210)">
+      <rect width="480" height="135" rx="16" fill="#18181b" stroke="#8b5cf6" stroke-width="1.2"/>
+      <rect x="14" y="14" width="32" height="32" rx="8" fill="#2e1065"/>
+      <text x="30" y="35" font-size="16" text-anchor="middle">🧠</text>
+      <text x="56" y="30" class="card-title">AI Coach Engine (ai_coach.py)</text>
+      <rect x="345" y="18" width="120" height="18" rx="6" fill="#8b5cf6" fill-opacity="0.2"/>
+      <text x="405" y="30" class="badge" fill="#c084fc" text-anchor="middle">Gemini 3.8 Flash</text>
+      <text x="56" y="52" class="card-desc">• Промпт: Харизматичный тренер Спартан (кратко, строго, по делу)</text>
+      <text x="56" y="69" class="card-desc">• Ответы на вопросы атлета по питанию, суставам, прогрессу</text>
+      <text x="56" y="86" class="card-desc">• Алгоритм калибровочной тренировки и адаптации нагрузки</text>
+      <text x="56" y="103" class="card-desc">• Офлайн-фоллбэк при недоступности сети</text>
+    </g>
+
+    <!-- Module 3: database.py & SQLite -->
+    <g transform="translate(20, 360)">
+      <rect width="480" height="145" rx="16" fill="#18181b" stroke="#f59e0b" stroke-width="1.2"/>
+      <rect x="14" y="14" width="32" height="32" rx="8" fill="#451a03"/>
+      <text x="30" y="35" font-size="16" text-anchor="middle">🗄️</text>
+      <text x="56" y="30" class="card-title">База данных SQLite (database.py / spartan.db)</text>
+      <rect x="365" y="18" width="100" height="18" rx="6" fill="#f59e0b" fill-opacity="0.2"/>
+      <text x="415" y="30" class="badge" fill="#fbbf24" text-anchor="middle">Встроенная БД</text>
+      <text x="56" y="52" class="card-desc">• Таблица users: telegram_id, имя, уровень, трек, время отдыха</text>
+      <text x="56" y="69" class="card-desc">• Таблица workout_logs: дата, длительность, повторения, упражнения</text>
+      <text x="56" y="86" class="card-desc">• Таблица reminders: график тренировок (пн, ср, пт)</text>
+      <text x="56" y="103" class="card-desc">• Нулевые накладные расходы: один файл без сторонних СУБД</text>
+    </g>
+
+    <!-- Inter-module arrows inside backend -->
+    <path d="M 260 195 L 260 210" fill="none" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+    <path d="M 260 345 L 260 360" fill="none" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrowZinc)"/>
+
+    <!-- Bottom Note -->
+    <rect x="20" y="520" width="480" height="105" rx="14" fill="#18181b" stroke="#27272a"/>
+    <text x="36" y="542" font-size="11" font-weight="700" fill="#e4e4e7">Роль Telegram-бота:</text>
+    <text x="36" y="562" class="card-desc">Бот берет на себя все «тяжелые» диалоговые функции, обработку аудио,</text>
+    <text x="36" y="579" class="card-desc">сохранение профиля атлета и расписание уведомлений. Благодаря этому</text>
+    <text x="36" y="596" class="card-desc">клиентское приложение остается быстрым, легким и не перегруженным.</text>
+  </g>
+
+  <!-- ==================== RIGHT COLUMN: WEB MINI APP ==================== -->
+  <g transform="translate(620, 255)">
+    <!-- Container Box -->
+    <rect width="720" height="645" rx="24" fill="#121215" stroke="#27272a" stroke-width="1.5" filter="url(#dropShadow)"/>
+
+    <!-- Header -->
+    <rect x="24" y="20" width="34" height="34" rx="8" fill="#14b8a6" fill-opacity="0.15"/>
+    <text x="41" y="42" font-size="16" text-anchor="middle">⚡</text>
+    <text x="70" y="35" class="section-title">Spartan Web Mini App (index.html на Netlify)</text>
+    <text x="70" y="49" class="card-desc">Чистый Spartan UI, быстрый движок тренировок, офлайн-готовность</text>
+    <line x1="24" y1="68" x2="696" y2="68" stroke="#27272a" stroke-width="1"/>
+
+    <!-- TOP SWITCH: AI MODE vs CLASSIC -->
+    <g transform="translate(24, 85)">
+      <rect width="672" height="60" rx="14" fill="#18181b" stroke="#14b8a6" stroke-width="1.2"/>
+      <text x="20" y="28" class="card-title">Свитч режима: «Тренироваться с AI»</text>
+      <text x="20" y="46" class="card-desc">Мгновенное переключение логики главного экрана через localStorage ('spartan_ai_mode')</text>
+      
+      <!-- Visual toggle pill -->
+      <rect x="560" y="16" width="90" height="28" rx="14" fill="#0f766e"/>
+      <circle cx="632" cy="30" r="11" fill="#ffffff"/>
+      <text x="590" y="34" font-size="10" font-weight="800" fill="#ffffff">ВКЛ</text>
+    </g>
+
+    <!-- TWO BRANCHES OF HOME SCREEN -->
+    <!-- AI Branch -->
+    <g transform="translate(24, 158)">
+      <rect width="326" height="155" rx="16" fill="#18181b" stroke="#14b8a6" stroke-width="1"/>
+      <rect x="12" y="12" width="26" height="26" rx="6" fill="#134e4a"/>
+      <text x="25" y="29" font-size="13" text-anchor="middle">🤖</text>
+      <text x="46" y="26" class="card-title">Режим с AI (isAIMode: true)</text>
+      <text x="46" y="38" font-size="9" fill="#14b8a6" font-weight="700">Выбор программ исключен</text>
+
+      <rect x="12" y="48" width="302" height="42" rx="10" fill="#134e4a" stroke="#14b8a6" stroke-width="1"/>
+      <text x="24" y="66" font-size="11" font-weight="800" fill="#ffffff">🔥 Начать: {План дня}</text>
+      <text x="24" y="80" font-size="9" fill="#a1a1aa">Автоматический цикл тренировок</text>
+
+      <rect x="12" y="98" width="302" height="45" rx="10" fill="#27272a"/>
+      <text x="24" y="115" font-size="11" font-weight="700" fill="#ffffff">📋 Ознакомиться с программой</text>
+      <text x="24" y="130" font-size="9" fill="#14b8a6">Всплывающая карточка логики тренера</text>
+    </g>
+
+    <!-- Classic Branch -->
+    <g transform="translate(370, 158)">
+      <rect width="326" height="155" rx="16" fill="#18181b" stroke="#3f3f46" stroke-width="1"/>
+      <rect x="12" y="12" width="26" height="26" rx="6" fill="#27272a"/>
+      <text x="25" y="29" font-size="13" text-anchor="middle">📋</text>
+      <text x="46" y="26" class="card-title">Классический режим (false)</text>
+      <text x="46" y="38" font-size="9" fill="#71717a" font-weight="700">Полный ручной контроль</text>
+
+      <rect x="12" y="48" width="302" height="42" rx="10" fill="#27272a" stroke="#3f3f46" stroke-width="1"/>
+      <text x="24" y="66" font-size="11" font-weight="800" fill="#ffffff">▶ Начать тренировку</text>
+      <text x="24" y="80" font-size="9" fill="#a1a1aa">Переход к выбору программ</text>
+
+      <rect x="12" y="98" width="302" height="45" rx="10" fill="#27272a"/>
+      <text x="24" y="115" font-size="10" font-weight="700" fill="#ffffff">Пресеты: Новичок / База / Спартанец</text>
+      <text x="24" y="130" font-size="9" fill="#a1a1aa">Конструктор своей тренировки</text>
+    </g>
+
+    <!-- CORE WORKOUT LOOP -->
+    <g transform="translate(24, 325)">
+      <rect width="672" height="150" rx="18" fill="#18181b" stroke="#14b8a6" stroke-width="1.5"/>
+      <text x="20" y="26" class="card-title">Тренировочный движок (Core Loop)</text>
+      <rect x="520" y="12" width="135" height="18" rx="6" fill="#14b8a6" fill-opacity="0.15"/>
+      <text x="587" y="24" class="badge" fill="#14b8a6" text-anchor="middle">Активная сессия</text>
+
+      <!-- Step 1: Active -->
+      <g transform="translate(16, 42)">
+        <rect width="195" height="92" rx="12" fill="#27272a"/>
+        <text x="14" y="24" font-size="11" font-weight="800" fill="#14b8a6">1. screen-active</text>
+        <text x="14" y="42" font-size="10" fill="#ffffff">Шаг N из M • Карточка 1:1</text>
+        <text x="14" y="58" font-size="9" fill="#a1a1aa">Повторения или Таймер</text>
+        <text x="14" y="74" font-size="9" fill="#a1a1aa">Кнопки +/- без спиннеров</text>
+      </g>
+
+      <!-- Arrow -->
+      <path d="M 220 88 L 240 88" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrowTeal)"/>
+
+      <!-- Step 2: Rest -->
+      <g transform="translate(248, 42)">
+        <rect width="195" height="92" rx="12" fill="#27272a"/>
+        <text x="14" y="24" font-size="11" font-weight="800" fill="#38bdf8">2. screen-rest</text>
+        <text x="14" y="42" font-size="10" fill="#ffffff">Таймер отдыха 60 сек</text>
+        <text x="14" y="58" font-size="9" fill="#a1a1aa">Аудио-пики на 3, 2, 1 сек</text>
+        <text x="14" y="74" font-size="9" fill="#a1a1aa">Кнопки: +15с, -15с, Пропуск</text>
+      </g>
+
+      <!-- Arrow -->
+      <path d="M 452 88 L 472 88" fill="none" stroke="#14b8a6" stroke-width="2" marker-end="url(#arrowTeal)"/>
+
+      <!-- Step 3: Finish -->
+      <g transform="translate(480, 42)">
+        <rect width="176" height="92" rx="12" fill="#27272a"/>
+        <text x="14" y="24" font-size="11" font-weight="800" fill="#34d399">3. screen-finished</text>
+        <text x="14" y="42" font-size="10" fill="#ffffff">Общее время сессии</text>
+        <text x="14" y="58" font-size="9" fill="#a1a1aa">Конфетти + Success звук</text>
+        <text x="14" y="74" font-size="9" fill="#a1a1aa">Запись в spartan_logs</text>
+      </g>
+    </g>
+
+    <!-- BOTTOM ROW: STATS & SETTINGS -->
+    <g transform="translate(24, 488)">
+      <!-- Stats Module -->
+      <g transform="translate(0, 0)">
+        <rect width="420" height="135" rx="16" fill="#18181b" stroke="#27272a"/>
+        <text x="16" y="24" class="card-title">Статистика &amp; Рекорды (screen-stats)</text>
+        <rect x="290" y="10" width="115" height="18" rx="6" fill="#14b8a6" fill-opacity="0.15"/>
+        <text x="347" y="22" class="badge" fill="#14b8a6" text-anchor="middle">Прогресс по упр.</text>
+
+        <text x="16" y="48" class="card-desc">• PR (Личные рекорды в одном сете): Отжимания, Брусья, Планка и др.</text>
+        <text x="16" y="66" class="card-desc">• Общий объем за все время (повторения / секунды) + число сетов</text>
+        <text x="16" y="84" class="card-desc">• Динамика тренда (+5 повт., Стабильно, Старт зафиксирован)</text>
+        <text x="16" y="102" class="card-desc">• История завершенных сессий + кнопка Экспорта в JSON</text>
+      </g>
+
+      <!-- Settings Module -->
+      <g transform="translate(435, 0)">
+        <rect width="237" height="135" rx="16" fill="#18181b" stroke="#27272a"/>
+        <text x="16" y="24" class="card-title">Настройки (screen-settings)</text>
+        <text x="16" y="48" class="card-desc">• Базовый отдых: +/- 5 сек</text>
+        <text x="16" y="66" class="card-desc">• Тема: Dark / Light</text>
+        <text x="16" y="84" class="card-desc">• Виброотклик Haptics</text>
+        <text x="16" y="102" class="card-desc">• Версия приложения: v 1.0</text>
+      </g>
+    </g>
+  </g>
+</svg>
