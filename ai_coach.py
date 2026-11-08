@@ -28,7 +28,7 @@ _load_env()
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
 
 # Модель Google Gemini
-MODEL_NAME = "gemini-2.5-flash"
+MODEL_NAME = "gemini-3.8-flash"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL_NAME}:generateContent"
 
 SYSTEM_INSTRUCTION = (
@@ -104,7 +104,7 @@ FALLBACK_WORKOUTS = {
 
 
 def query_gemini_api(prompt: str) -> str:
-    """Выполняет реальный запрос к Gemini API."""
+    """Выполняет реальный запрос к Gemini API (gemini-3.8-flash)."""
     if not GEMINI_API_KEY:
         return ""
 
@@ -114,7 +114,7 @@ def query_gemini_api(prompt: str) -> str:
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {
                 "temperature": 0.7,
-                "maxOutputTokens": 300
+                "maxOutputTokens": 350
             }
         }
         req = urllib.request.Request(
@@ -122,11 +122,17 @@ def query_gemini_api(prompt: str) -> str:
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json", "User-Agent": "SpartanTrainerBot/1.0"}
         )
-        with urllib.request.urlopen(req, context=ctx, timeout=8) as resp:
+        with urllib.request.urlopen(req, context=ctx, timeout=12) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+            text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+            print("⚡ [Gemini 3.8 Flash]: Ответ успешно сгенерирован нейросетью!")
+            return text
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='ignore')
+        print(f"⚠️ [Gemini API HTTP {e.code}]: {body[:150]}")
+        return ""
     except Exception as e:
-        print(f"Ошибка вызова Gemini API: {e}")
+        print(f"⚠️ [Gemini API Ошибка связи]: {e}")
         return ""
 
 
@@ -137,12 +143,21 @@ def get_expert_spartan_answer(question: str) -> str:
         q = q.replace(ch, ' ')
     q = q.strip()
 
-    # 1. Программа / Собрать тренировку / Настройка плана
-    if any(k in q for k in ["собрать", "настрой", "программ", "состав", "план", "трениров"]):
+    # 1. Запрос на другую программу / альтернативу
+    if any(k in q for k in ["друг", "поменяй", "смени", "альтернатив", "не хочу", "тяжел"]):
+        return (
+            "Без проблем, спартанец! Если сегодня не хочешь базовый сет, у нас есть альтернативы: "
+            "1) День 2: Ноги & Пресс (глубокие приседания 25 раз + планка 45 сек); "
+            "2) День 3: Спина & Брусья (подтягивания чистые + отжимания на брусьях). "
+            "Либо открой Spartan по кнопке ниже, выключи тумблер «Тренироваться с AI» и собери свой собственный комплекс!"
+        )
+
+    # 2. Программа / Собрать тренировку / Настройка плана
+    if any(k in q for k in ["собрать", "настрой", "программ", "состав", "план", "трениров", "постро"]):
         return (
             "Я уже всё подготовил, спартанец! В приложении Spartan включен умный AI-режим. "
             "Я разбил тренировки на 3 цикла: 1) Верх тела (Грудь и Кор), 2) Низ и Баланс (Ноги и Пресс), 3) Спина, Брусья и Хват. "
-            "Нажимай кнопку «🏋️ Начать тренировку» ниже и жми плашку «📋 Ознакомиться с программой» — там расписана вся логика и упражнения на сегодня!"
+            "Нажимай кнопку «🏋️ Открыть Spartan» ниже и жми плашку «📋 Ознакомиться с программой» — там расписана вся логика и упражнения на сегодня!"
         )
 
     # 2. Дыхание
@@ -231,9 +246,16 @@ def get_expert_spartan_answer(question: str) -> str:
             "Здравия желаю, боец! На связи тренер Спартан. Готов к работе? Задавай любой вопрос по технике или открывай приложение Spartan и закрывай цель дня!"
         )
 
+    # Если вопрос не распознан или набор букв
+    if len(q) < 4 or not any(c in q for c in 'аеёиоуыэюя'):
+        return (
+            "Боец, соберись! Не понял твоего сообщения. Спроси меня конкретно: "
+            "по технике упражнений (отжимания, брусья, турник), правильному дыханию или питанию. Либо открывай Spartan и жми!"
+        )
+
     return (
-        "Слушаю тебя, спартанец! Запомни основу: чистая техника и дисциплина бьют любой объем. "
-        "Открывай Spartan по кнопке ниже — там тебя уже ждет тренировочный комплекс дня. Погнали!"
+        f"Принято, спартанец! Твой запрос: «{question}». Чтобы дать точный совет, уточни: тебя интересует техника упражнений, "
+        f"программа тренировок или восстановление? А лучше открывай Spartan по кнопке ниже и приступай к делу!"
     )
 
 
